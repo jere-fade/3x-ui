@@ -190,5 +190,5 @@ function buildURL({ host, port, isTLS, base, path }) {
         port = `:${port}`;
     }
 
-    return `${protocol}//${host}${port}${base}${path}`;
+    return `${protocol}//${host}${base}${path}`;
 }
