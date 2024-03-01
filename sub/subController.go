@@ -3,6 +3,7 @@ package sub
 import (
 	"encoding/base64"
 	"fmt"
+	"log"
 	"strings"
 
 	"x-ui/web/service"
@@ -53,7 +54,11 @@ func (a *SUBController) initRouter(g *gin.RouterGroup) {
 }
 
 func (a *SUBController) subs(c *gin.Context) {
+	log.Println(c.Request.Host)
 	subId := c.Param("subid")
+	host := strings.Split(c.Request.Host, ":")[0]
+	log.Println(subId)
+	log.Panicln(host)
 	var myproxySub = "1ba393cfe9ecf4c2b545d60aa21c60840a41aacc899231bb21d2d0613bdb9a97"
 	var myproxyTitle = "myproxy++"
 	var lanSub = "1f7e4c7913c53240acc1bdc8a3e48f260120faf5c504ea9f2aa7b51d8916497d"
@@ -76,10 +81,12 @@ func (a *SUBController) subs(c *gin.Context) {
 
 		if subId == myproxySub {
 			c.Writer.Header().Set("Profile-Title", myproxyTitle)
-			c.File("clash" + "/" + myproxyTitle)
+			c.Writer.Header().Set("Content-Disposition", "attachment; filename*=UTF-8''"+myproxyTitle)
+			c.File("clash" + "/" + myproxyTitle + ".yaml")
 		} else {
 			c.Writer.Header().Set("Profile-Title", lanTitle)
-			c.File("clash" + "/" + lanTitle)
+			c.Writer.Header().Set("Content-Disposition", "attachment; filename*=UTF-8''"+lanTitle)
+			c.File("clash" + "/" + lanTitle + ".yaml")
 		}
 
 	} else {
