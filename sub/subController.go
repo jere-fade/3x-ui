@@ -63,7 +63,7 @@ func (a *SUBController) subs(c *gin.Context) {
 		inbounds, err := inboundService.GetAllInbounds()
 
 		if err != nil {
-			c.String(400, "Error!")
+			c.String(400, "Can not use inbound service")
 		}
 		var upload, download, total int64
 		for _, inbound := range inbounds {
