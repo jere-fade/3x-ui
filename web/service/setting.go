@@ -59,6 +59,8 @@ var defaultValueMap = map[string]string{
 	"subURI":             "",
 	"subJsonPath":        "/json/",
 	"subJsonURI":         "",
+	"subYamlPath":        random.Seq(64),
+	"subYamlLanPath":     random.Seq(64),
 	"subJsonFragment":    "",
 	"datepicker":         "gregorian",
 	"warp":               "",
@@ -433,6 +435,48 @@ func (s *SettingService) GetSubJsonURI() (string, error) {
 	return s.getString("subJsonURI")
 }
 
+func (s *SettingService) GetSubYamlPath() (string, error) {
+	path, err := s.getString("subYamlPath")
+	if path == defaultValueMap["subYamlPath"] {
+		err := s.saveSetting("subYamlPath", path)
+		if err != nil {
+			logger.Warning("save subYamlPath failed:", err)
+		}
+	}
+	return path, err
+}
+
+func (s *SettingService) GetSubYamlLanPath() (string, error) {
+	path, err := s.getString("subYamlLanPath")
+	if path == defaultValueMap["subYamlLanPath"] {
+		err := s.saveSetting("subYamlLanPath", path)
+		if err != nil {
+			logger.Warning("save subYamlLanPath failed:", err)
+		}
+	}
+	return path, err
+}
+
+func (s *SettingService) SetSubYamlPath(path string) error {
+	return s.setString("subYamlPath", path)
+}
+
+func (s *SettingService) SetSubYamlLanPath(path string) error {
+	return s.setString("subYamlLanPath", path)
+}
+
+func (s *SettingService) RefreshClashSubs() error {
+	err := s.SetSubYamlPath(random.Seq(64))
+	if err != nil {
+		return err
+	}
+	err = s.SetSubYamlLanPath(random.Seq(64))
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (s *SettingService) GetSubJsonFragment() (string, error) {
 	return s.getString("subJsonFragment")
 }
@@ -509,6 +553,8 @@ func (s *SettingService) GetDefaultSettings(host string) (interface{}, error) {
 		subPort, _ := s.GetSubPort()
 		subPath, _ := s.GetSubPath()
 		subJsonPath, _ := s.GetSubJsonPath()
+		subYamlPath, _ := s.GetSubYamlPath()
+		subYamlLanPath, _ := s.GetSubYamlLanPath()
 		subDomain, _ := s.GetSubDomain()
 		subKeyFile, _ := s.GetSubKeyFile()
 		subCertFile, _ := s.GetSubCertFile()
@@ -531,6 +577,8 @@ func (s *SettingService) GetDefaultSettings(host string) (interface{}, error) {
 		}
 		if result["subURI"].(string) == "" {
 			result["subURI"] = subURI + subPath
+			result["subYamlURI"] = subURI + subPath + subYamlPath
+			result["subYamlLanURI"] = subURI + subPath + subYamlLanPath
 		}
 		if result["subJsonURI"].(string) == "" {
 			result["subJsonURI"] = subURI + subJsonPath

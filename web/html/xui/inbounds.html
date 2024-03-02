@@ -141,6 +141,14 @@
                                                 <a-icon type="export"></a-icon>
                                                 {{ i18n "pages.inbounds.export" }} - {{ i18n "pages.settings.subSettings" }}
                                             </a-menu-item>
+                                            <a-menu-item key="clashSubs" v-if="subSettings.enable">
+                                                <a-icon type="export"></a-icon>
+                                                Export Clash URLs
+                                            </a-menu-item>
+                                            <a-menu-item key="refreshClashSubs" v-if="subSettings.enable">
+                                                <a-icon type="reload"></a-icon>
+                                                Refresh Clash URLs
+                                            </a-menu-item>
                                             <a-menu-item key="resetInbounds">
                                                 <a-icon type="reload"></a-icon>
                                                 {{ i18n "pages.inbounds.resetAllTraffic" }}
@@ -620,7 +628,9 @@
                     this.subSettings = {
                         enable : subEnable,
                         subURI: subURI,
-                        subJsonURI: subJsonURI
+                        subJsonURI: subJsonURI,
+                        subYamlURI: subYamlURI,
+                        subYamlLanURI: subYamlLanURI
                     };
                     this.pageSize = pageSize;
                     this.remarkModel = remarkModel;
@@ -754,6 +764,12 @@
                         break;
                     case "subs":
                         this.exportAllSubs();
+                        break;
+                    case "clashSubs":
+                        this.exportClashSubs();
+                        break;
+                    case "refreshClashSubs": 
+                        this.refreshClashSubs();
                         break;
                     case "resetInbounds":
                         this.resetAllTraffic();
@@ -1073,6 +1089,7 @@
                 const msg = await HttpUtil.postWithModal(url, data, modal);
                 if (msg.success) {
                     await this.getDBInbounds();
+                    await this.getDefaultSettings();
                 }
             },
             getInboundClients(dbInbound) {
@@ -1100,6 +1117,16 @@
                     okText: '{{ i18n "reset"}}',
                     cancelText: '{{ i18n "cancel"}}',
                     onOk: () => this.submit('/panel/inbound/resetAllTraffics'),
+                });
+            },
+            refreshClashSubs() {
+                this.$confirm({
+                    title: 'Refresh Clash Subscription URLs',
+                    content: 'Are you sure you want to refresh clash subscription URLs?',
+                    class: themeSwitcher.currentTheme,
+                    okText: 'refresh',
+                    cancelText: '{{ i18n "cancel"}}',
+                    onOk: () => this.submit('/panel/setting/refreshClashSubs'),
                 });
             },
             resetAllClientTraffics(dbInboundId) {
@@ -1248,6 +1275,13 @@
                     '{{ i18n "pages.inbounds.export"}} - {{ i18n "pages.settings.subSettings" }}',
                     [...new Set(subLinks)].join('\r\n'),
                     'All-Inbounds-Subs');
+            },
+            exportClashSubs() {
+                let clashLinks = [this.subSettings.subYamlURI, this.subSettings.subYamlLanURI] 
+                txtModal.show(
+                    "Export Clash Subs",
+                    [...new Set(clashLinks)].join('\r\n'),
+                    'All-Clash-Subs');
             },
             exportAllLinks() {
                 let copyText = [];

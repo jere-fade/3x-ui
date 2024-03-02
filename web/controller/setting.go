@@ -38,6 +38,7 @@ func (a *SettingController) initRouter(g *gin.RouterGroup) {
 
 	g.POST("/all", a.getAllSetting)
 	g.POST("/defaultSettings", a.getDefaultSettings)
+	g.POST("/refreshClashSubs", a.refreshClashSubs)
 	g.POST("/update", a.updateSetting)
 	g.POST("/updateUser", a.updateUser)
 	g.POST("/restartPanel", a.restartPanel)
@@ -135,4 +136,9 @@ func (a *SettingController) getDefaultXrayConfig(c *gin.Context) {
 		return
 	}
 	jsonObj(c, defaultJsonConfig, nil)
+}
+
+func (a *SettingController) refreshClashSubs(c *gin.Context) {
+	err := a.settingService.RefreshClashSubs()
+	jsonMsg(c, "Refresh Clash Subs", err)
 }

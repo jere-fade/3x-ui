@@ -54,10 +54,19 @@ func (a *SUBController) initRouter(g *gin.RouterGroup) {
 
 func (a *SUBController) subs(c *gin.Context) {
 	subId := c.Param("subid")
-	var myproxySub = "1ba393cfe9ecf4c2b545d60aa21c60840a41aacc899231bb21d2d0613bdb9a97"
+
+	myproxySub, err := a.subService.settingService.GetSubYamlPath()
+	if err != nil {
+		c.String(400, "Error")
+	}
 	var myproxyTitle = "myproxy++"
-	var lanSub = "1f7e4c7913c53240acc1bdc8a3e48f260120faf5c504ea9f2aa7b51d8916497d"
+
+	lanSub, err := a.subService.settingService.GetSubYamlLanPath()
+	if err != nil {
+		c.String(400, "Error")
+	}
 	var lanTitle = "LAN"
+
 	if subId == myproxySub || subId == lanSub {
 		inboundService := service.InboundService{}
 		inbounds, err := inboundService.GetAllInbounds()
