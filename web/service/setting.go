@@ -548,6 +548,13 @@ func (s *SettingService) GetDefaultSettings(host string) (interface{}, error) {
 		result[key] = value
 	}
 
+	if result["subURI"].(string) != "" {
+		subYamlPath, _ := s.GetSubYamlPath()
+		subYamlLanPath, _ := s.GetSubYamlLanPath()
+		result["subYamlURI"] = result["subURI"].(string) + subYamlPath
+		result["subYamlLanURI"] = result["subURI"].(string) + subYamlLanPath
+	}
+
 	if result["subEnable"].(bool) && (result["subURI"].(string) == "" || result["subJsonURI"].(string) == "") {
 		subURI := ""
 		subPort, _ := s.GetSubPort()
